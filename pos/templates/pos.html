@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<div class="card-box mb-30">
+    <div class="pd-20">
+        <h4 class="text-blue h4">Items
+            <a href="{% url 'myapp:MyCartView' %}" class="text-info">
+
+
+                <span class="micon bi bi-cart4"></span>
+                <span class="micon bi bi-cart4"></span>
+                <span class="micon bi bi-cart4"></span>
+
+
+            </a>
+        </h4>
+
+    </div>
+    <div class="pb-20">
+        <table class=" table stripe hover nowrap">
+            <thead>
+            <tr class="table-warning">
+                <th class="table-plus datatable-nosort">Item Name</th>
+                <th>Category</th>
+                <th>Sale Price</th>
+                <th>Balance Qty</th>
+                <!--                <th>Add to Cart</th>-->
+                <!--										<th class="datatable-nosort">Action</th>-->
+            </tr>
+            </thead>
+            <tbody>
+            {% for p in product_list %}
+            <tr class="table-info">
+                <td class="table-plus"><a href="#"><h6 class="text-blue">
+                    {{p.item_name}}</h6></a></td>
+                <td>{{p.category}}</td>
+                <td>{{p.sell_price}}</td>
+                <td>{{p.balance_qty}}</td>
+                <!--                <td><a href="{% url 'myapp:AddToCartView' p.id %}" class="btn btn-sm btn-outline-primary"> Add to-->
+                <!--                    Cart</a></td>-->
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        console.log('POS View');
+    });
+</script>
+
+{% endblock content %}

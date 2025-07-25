@@ -455,6 +455,12 @@
 							</a>
 						</li>
 						<li>
+							<a href="{% url 'myapp:POSView' %}" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-cart4"></span
+								><span class="mtext">အရောင်း စာမျက်နှာ 2</span>
+							</a>
+						</li>
+						<li>
 							<a href="{% url 'myapp:EcommerceSaleOrder' %}" class="dropdown-toggle no-arrow">
 								<span class="micon bi bi-cart4"></span
 								><span class="mtext">EcommerceOrder</span>
@@ -576,6 +582,7 @@
 <!--		<script src="{% static 'src/plugins/apexcharts/apexcharts.min.js' %}"></script>-->
 <!--		<script src="{% static 'vendors/scripts/apexcharts-setting.js' %}"></script>-->
 <!--<script src="{% static 'vendors/scripts/goog.js' %}"></script>-->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
 
 		<script src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -588,5 +595,10 @@
 			></iframe
 		></noscript>
 		<!-- End Google Tag Manager (noscript) -->
+		 <script>
+			$(document).ready(function(){
+				console.log('Jquery is comfrim')
+			});
+		 </script>
 	</body>
 </html>
