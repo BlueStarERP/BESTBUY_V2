@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card-box mb-30">
+    <div class="pd-20">
+        <h4 class="text-blue h4">EcommerceSaleOrder List</h4>
+
+    </div>
+    <div class="pb-20">
+        
+        <table class="data-table table stripe hover nowrap">
+            <thead>
+            <tr class="table-warning">
+
+                
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Phone Number</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Print</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for p in or_data %}
+            <tr class="">
+                <td class="table-plus"><a href="{% url 'myapp:NotiOrderDetailView' p.id %}"><b>{{p.id}}</b></a></td>
+                <td>{{p.customer_name}}</td>
+                <td>{{p.mobile}}</td>
+                <td>{{p.created_at}}</td>
+                <td>
+                    {% if p.orderstatus == 1 %}
+                    <span class="badge badge-warning badge-pill">sale order</span>
+                    {% else %}
+                    <span class="badge badge-info badge-pill">completed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'myapp:NotiOrderDetailView' p.id %}" target="_blank" class="badge badge-danger badge-pill">Print Invoice</a>
+                </td>
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

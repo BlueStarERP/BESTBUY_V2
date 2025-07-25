@@ -1,0 +1,191 @@
+{% extends 'web/webbase.html' %}
+{% load static %}
+
+{% block content %}
+
+
+
+        <!--Body Content-->
+        <div id="page-content">
+            <!--MainContent-->
+            <div id="MainContent" class="main-content" role="main">
+                <!--Breadcrumb-->
+                <div class="bredcrumbWrap">
+                    <div class="container breadcrumbs" role="navigation" aria-label="breadcrumbs">
+                        <a href="index.html" title="Back to the home page">Home</a><span aria-hidden="true">›</span><span>Product with Variant Image</span>
+                    </div>
+                </div>
+                <!--End Breadcrumb-->
+                
+                <div id="ProductSection-product-template" class="product-template__container prstyle1 container">
+                    <!--product-single-->
+                    <div class="product-single">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                <div class="product-details-img">
+                                    <div class="zoompro-wrap product-zoom-right pl-20">
+                                        <div class="zoompro-span">
+                                            <img class="blur-up lazyload zoompro" data-zoom-image="{{order_data.photo.url}}" alt="" src="{{order_data.photo.url}}" />
+                                        </div>
+                                        <div class="product-buttons">
+                                            <!-- <a href="#" class="btn popup-video" title="View Video"><i class="icon anm anm-play-r" aria-hidden="true"></i></a> -->
+                                            <a href="#" class="btn prlightbox" title="Zoom"><i class="icon anm anm-expand-l-arrows" aria-hidden="true"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="lightboximages">
+                                        <a href="{{order_data.photo.url}}" data-size="1462x2048"></a>
+                                        
+                                    </div>
+        							<div class="product-thumb">
+                                        <div id="gallery" class="product-dec-slider-2 product-tab-left">
+                                            <a data-image="{{order_data.photo.url}}" data-zoom-image="{{order_data.photo.url}}" class="slick-slide slick-cloned" data-slick-index="-4" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{{order_data.photo.url}}" alt="" />
+                                            </a>
+                                            <a data-image="{{order_data.photo2.url}}" data-zoom-image="{{order_data.photo2.url}}" class="slick-slide slick-cloned" data-slick-index="-3" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{{order_data.photo2.url}}" alt="" />
+                                            </a>
+                                            <a data-image="{{order_data.photo3.url}}" data-zoom-image="{{order_data.photo3.url}}" class="slick-slide slick-cloned" data-slick-index="-2" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{{order_data.photo3.url}}" alt="" />
+                                            </a>
+                                            <a data-image="{{order_data.photo4.url}}" data-zoom-image="{{order_data.photo4.url}}" class="slick-slide slick-cloned" data-slick-index="-1" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{{order_data.photo4.url}}" alt="" />
+                                            </a>
+                                            <a data-image="{{order_data.photo.url}}" data-zoom-image="{{order_data.photo.url}}" class="slick-slide slick-cloned" data-slick-index="0" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{{order_data.photo.url}}" alt="" />
+                                            </a>
+                                            <!-- <a data-image="{{order_data.photo1.url}}" data-zoom-image="{% static 'assets/images/product-detail-page/product-with-right-thumbs-6.jpg' %}" class="slick-slide slick-cloned" data-slick-index="1" aria-hidden="true" tabindex="-1">
+                                                <img class="blur-up lazyload" src="{% static 'assets/images/product-detail-page/product-with-right-thumbs-6.jpg' %}" alt="" />
+                                            </a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                <div class="product-single__meta">
+                                    <h1 class="product-single__title"> {{order_data.item_name}}</h1>
+                                    <div class="product-nav clearfix">					
+                                        <a href="#" class="next" title="Next"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                    </div>
+                                    
+                                    <p class="product-single__price product-single__price-product-template">
+                                        <span class="visually-hidden">Regular price</span>
+                                        <span class="product-price__price product-price__price-product-template">
+                                            <span id="ProductPrice-product-template"><span class="money">{{order_data.sell_price}} MMK</span></span>
+                                        </span>
+                                    </p>
+                                    <div class="product-single__description rte">
+                                        <p>{{order_data.itm_description}}</p>
+                                    </div>
+                                
+                                <div class="display-table shareRow">
+                                   
+                                    
+                                </div>
+                            	</div>
+                                <form method="post" action="{% url 'myapp:WebItemDetailOrder' %}" accept-charset="UTF-8" class="product-form product-form-product-template hidedropdown" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <div class="selector-wrapper js product-form__item">
+                                        <label for="SingleOptionSelector-0">Color</label>
+                                        <select class="single-option-selector single-option-selector-product-template product-form__input selectbox" id="SingleOptionSelector-0" data-index="option1" name="icol">
+                                            {% for i in itmcol %}
+                                            <option value="{{i.color}}">{{i.color}}</option>
+                                            {% endfor %}
+                                            
+                                        </select>
+                                      </div>
+                                    
+                                    <div class="selector-wrapper js product-form__item">
+                                        <label for="SingleOptionSelector-1">Size</label>
+                                        <select class="single-option-selector single-option-selector-product-template product-form__input selectbox" id="SingleOptionSelector-1" data-index="option2" name="isize">
+                                            {% for i in itmsize %}
+                                            <option value="{{i.size}}">{{i.size}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Product Action -->
+                                    <div class="product-action clearfix">
+                                        <div class="product-form__item--quantity">
+                                            <div class="wrapQtyBtn">
+                                                <div class="qtyField">
+                                                    <a class="qtyBtn minus" href="javascript:void(0);"><i class="fa anm anm-minus-r" aria-hidden="true"></i></a>
+                                                    <input type="text" id="Quantity" name="quantity" value="1" class="product-form__input qty">
+                                                    <a class="qtyBtn plus" href="javascript:void(0);"><i class="fa anm anm-plus-r" aria-hidden="true"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>                                
+                                        <div class="product-form__item--submit">
+
+                                            <input type="text" value="{{order_data.id}}" name="pid" hidden>
+
+                                            
+                                            <input type="submit" value="Add to Cart">
+                                        </div>
+                                    </div>
+                                    <!-- End Product Action -->
+                                </form>
+                                
+
+                        	</div>
+                    </div>
+                    <!--End-product-single-->
+                    <!--Product Fearure-->
+                    <div class="prFeatures">
+                        
+                    </div>
+                    <!--End Product Fearure-->
+                  
+                    
+                    </div>
+                <!--#ProductSection-product-template-->
+            </div>
+            <!--MainContent-->
+        </div>
+    	<!--End Body Content-->
+    	</div>
+        
+        <script>
+            $(function(){
+                var $pswp = $('.pswp')[0],
+                    image = [],
+                    getItems = function() {
+                        var items = [];
+                        $('.lightboximages a').each(function() {
+                            var $href   = $(this).attr('href'),
+                                $size   = $(this).data('size').split('x'),
+                                item = {
+                                    src : $href,
+                                    w: $size[0],
+                                    h: $size[1]
+                                }
+                                items.push(item);
+                        });
+                        return items;
+                    }
+                var items = getItems();
+            
+                $.each(items, function(index, value) {
+                    image[index]     = new Image();
+                    image[index].src = value['src'];
+                });
+                $('.prlightbox').on('click', function (event) {
+                    event.preventDefault();
+                  
+                    var $index = $(".active-thumb").parent().attr('data-slick-index');
+                    $index++;
+                    $index = $index-1;
+            
+                    var options = {
+                        index: $index,
+                        bgOpacity: 0.9,
+                        showHideOpacity: true
+                    }
+                    var lightBox = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options);
+                    lightBox.init();
+                });
+            });
+            </script>
+
+
+{% endblock content %}
+
