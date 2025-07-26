@@ -3,20 +3,57 @@
 {% block content %}
 
 
+<div class="card-box mb-30">
+
+    <div class="pb-20">
+        <table class="table stripe hover nowrap">
+            <thead>
+            <tr>
+                
+                <th>Item Name</th>
+                <th>Rate</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                
+                <th>Edit</th>
+               
+            </tr>
+            </thead>
+            <tbody id="cartTbody">
+            
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-right">Total Amount</td>
+                    <td id="cart-total"></td>
+                    <td>
+                        <button type="button" class="btn btn-md btn-success">Next</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <!-- customer info  -->
+        <div>
+            
+        </div>
+        <!-- end customer info  -->
+
+    </div>
+</div>
+
 
 <div class="card-box mb-30">
-    <div class="pd-20">
-        <h4 class="text-blue h4">Items
-            <a href="{% url 'myapp:MyCartView' %}" class="text-info">
+    <div class="p-2 row">
+         <select class="form-select form-control w-25 mx-3" aria-label="Default select example">
+  <option selected>Selct Category</option>
+  {% for i in cat %}
+  <option value="{{i.category_name}}">{{i.category_name}}</option>
+  {% endfor %}
 
+</select>
+        <input type="search" name="itemsearch" id="itemsearch" class="form-control w-25 mx-5" placeholder="Search Items">
 
-                <span class="micon bi bi-cart4"></span>
-                <span class="micon bi bi-cart4"></span>
-                <span class="micon bi bi-cart4"></span>
-
-
-            </a>
-        </h4>
 
     </div>
     <div class="pb-20">
@@ -31,17 +68,15 @@
                 <!--										<th class="datatable-nosort">Action</th>-->
             </tr>
             </thead>
-            <tbody>
+            <tbody id="itemList">
             {% for p in product_list %}
-            <tr class="table-info">
+            <tr class="table-info addCart" data-id="{{p.id}}" data-itemname="{{p.item_name}}" data-price="{{p.sell_price}}">
                 <td class="table-plus"><a href="#"><h6 class="text-blue">
                     {{p.item_name}}</h6></a></td>
                 <td>{{p.category}}</td>
                 <td>{{p.sell_price}}</td>
                 <td>{{p.balance_qty}}</td>
-                <!--                <td><a href="{% url 'myapp:AddToCartView' p.id %}" class="btn btn-sm btn-outline-primary"> Add to-->
-                <!--                    Cart</a></td>-->
-
+                
             </tr>
             {% endfor %}
 
@@ -56,8 +91,85 @@
 
 <script>
     $(document).ready(function(){
-        console.log('POS View');
-    });
+        
+        // localStorage
+        // Initialize cart from localStorage
+        let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+        // Function to save cart to localStorage
+        function saveCart() {
+            localStorage.setItem('shoppingCart', JSON.stringify(cart));
+        }
+
+        function renderCart() {
+            // localStorage.removeItem('shoppingCart'); 
+            $('#cartTbody').empty(); // Clear existing items
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                $('#cartTbody').append(`
+                    <tr>
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td> ${item.quantity}</td>
+                <td>${itemTotal}</td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-outline-success addqty">+</a>
+                    <a href="#" class="btn btn-sm btn-outline-danger removebtn">x</a>
+                    </td>
+            </tr>
+                `);
+            });//forEach
+            $('#cart-total').text(total); // Update total amount
+
+        }
+
+        $('.addCart').on('click', function () {
+            const itemid = $(this).data('id');
+            const itemname = $(this).data('itemname');
+            const itemprice = $(this).data('price');
+            cart.push({
+                id: itemid,
+                name: itemname,
+                price: itemprice,
+                quantity: 1
+            });
+            saveCart();
+            renderCart();
+
+        });//addCart
+
+        // Add quantity to cart
+        $('#cartTbody').on('click', '.addqty', function () {
+            const row = $(this).closest('tr');
+            const itemName = row.find('td:first').text();
+            const item = cart.find(item => item.name === itemName);
+            if (item) {
+                item.quantity++;
+                saveCart();
+                renderCart();
+            }
+
+
+        });
+
+        // Remove item from cart
+        $('#cartTbody').on('click', '.removebtn', function () {
+            const row = $(this).closest('tr');
+            const itemName = row.find('td:first').text();
+            cart = cart.filter(item => item.name !== itemName); // Remove item from cart array
+            saveCart();
+            renderCart();
+        });
+
+
+
+
+
+
+renderCart();
+    });// ready function
 </script>
 
 {% endblock content %}

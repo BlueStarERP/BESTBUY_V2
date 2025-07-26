@@ -251,9 +251,12 @@ class MyCartView(UserRequiredMixin,TemplateView):
 
 class POSView(View):
     def get(self, request):
-        product_list = Items.objects.all().order_by('-id')
-        context ={'product_list': product_list }
+        product_list = Items.objects.all()[:10]
+        cat = Category.objects.all().order_by('-id')
+        context ={'product_list': product_list, 'cat':cat }
         return render(request,'pos.html', context)
+
+
 
 class ManageCartView(UserRequiredMixin,View):
     def get(self, request, *args, **kwargs):
