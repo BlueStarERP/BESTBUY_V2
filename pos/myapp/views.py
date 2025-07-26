@@ -257,6 +257,21 @@ class POSView(View):
         return render(request,'pos.html', context)
 
 
+class GetItemsByCategory(View):
+    def get(self, request):
+        cat = request.GET.get('cat', None)
+        product_list = Items.objects.filter(category=cat)
+        items = []
+        for item in product_list:
+            items.append({
+                'id': item.id,
+                'item_name': item.item_name,
+                'sell_price': item.sell_price,
+                'category': item.category,
+            })
+
+        return JsonResponse({'status':'success', 'data': items})
+
 
 class ManageCartView(UserRequiredMixin,View):
     def get(self, request, *args, **kwargs):

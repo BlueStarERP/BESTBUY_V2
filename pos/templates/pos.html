@@ -28,7 +28,7 @@
                     <td colspan="3" class="text-right">Total Amount</td>
                     <td id="cart-total"></td>
                     <td>
-                        <button type="button" class="btn btn-md btn-success">Next</button>
+                        <button type="button" onclick="" class="btn btn-md btn-success">Check Out</button>
                     </td>
                 </tr>
             </tfoot>
@@ -36,7 +36,7 @@
         <!-- customer info  -->
         <div>
             
-        </div>
+    </div>
         <!-- end customer info  -->
 
     </div>
@@ -45,7 +45,7 @@
 
 <div class="card-box mb-30">
     <div class="p-2 row">
-         <select class="form-select form-control w-25 mx-3" aria-label="Default select example">
+         <select id="categoryList" class="form-select form-control w-25 mx-3" aria-label="Default select example">
   <option selected>Selct Category</option>
   {% for i in cat %}
   <option value="{{i.category_name}}">{{i.category_name}}</option>
@@ -125,20 +125,67 @@
 
         }
 
-        $('.addCart').on('click', function () {
-            const itemid = $(this).data('id');
-            const itemname = $(this).data('itemname');
-            const itemprice = $(this).data('price');
-            cart.push({
-                id: itemid,
-                name: itemname,
-                price: itemprice,
-                quantity: 1
+        $('#categoryList').change(function(){
+            let cat = $(this).val();
+            $.ajax({
+                url: '/get-items-by-category/',
+                type: 'GET',
+                data: {cat: cat},
+                success: function(response) {
+                    $('#itemList').empty(); // Clear existing items
+                    if (response.status === 'success') {
+                        response.data.forEach(item => {
+                            $('#itemList').append(`
+                                <tr class="table-info addCart" data-id="${item.id}" data-itemname="${item.item_name}" data-price="${item.sell_price}">
+                                    <td class="table-plus"><h6 class="text-blue">
+                                        ${item.item_name}</h6></td>
+                                    <td>${item.category}</td>
+                                    <td>${item.sell_price}</td>
+                                    <td>
+                                        <button onclick="addToCart(${item.id}, '${item.item_name}', ${item.sell_price})" class="btn btn-sm btn-outline-success addCartBtn">Add to Cart</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                }
             });
+        });
+
+       function addToCart(itemid, itemname, itemprice) {
+        console.log('add to cart called');
+            const existingItem = cart.find(item => item.id === itemid);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    id: itemid,
+                    name: itemname,
+                    price: itemprice,
+                    quantity: 1
+                });
+            }
             saveCart();
             renderCart();
+        }
 
-        });//addCart
+
+
+
+        // $('.addCart').on('click', function () {
+        //     const itemid = $(this).data('id');
+        //     const itemname = $(this).data('itemname');
+        //     const itemprice = $(this).data('price');
+        //     cart.push({
+        //         id: itemid,
+        //         name: itemname,
+        //         price: itemprice,
+        //         quantity: 1
+        //     });
+        //     saveCart();
+        //     renderCart();
+
+        // });//addCart
 
         // Add quantity to cart
         $('#cartTbody').on('click', '.addqty', function () {

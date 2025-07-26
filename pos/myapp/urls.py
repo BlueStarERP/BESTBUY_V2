@@ -57,6 +57,7 @@ urlpatterns = [
 
 #V2
     path('POSView/', POSView.as_view(), name='POSView'),
+    path('get-items-by-category/', GetItemsByCategory.as_view(), name='GetItemsByCategory'),
 
 
 #website section
