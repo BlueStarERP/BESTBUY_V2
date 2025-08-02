@@ -249,12 +249,55 @@ class MyCartView(UserRequiredMixin,TemplateView):
         # context['allord'] = EcommerceOrder.objects.all().order_by('-id')
         return context
 
+# V2
+class Report2(View):
+    def get(self, request):
+        rep = Order.objects.all()
+        report = []
+        for i in rep:
+            for cart in i.cart.cartproduct_set.all():
+                # print(cart)
+                report.append({
+                    'id': cart.id,
+                    'product_name': cart.product.item_name,
+                    'quantity': cart.quantity,
+                    'subtotal': cart.subtotal,
+                    'customer': i.ordered_by,
+                    'date': i.created_at,
+                })
+        print(report)
+        context={'report':report}
+        return render(request, 'report2.html', context)
+
+
+class getReport(View):
+    def get(self, request):
+        rep = Order.objects.all()
+
+        report = []
+        for i in rep:
+            for cart in i.cart.cartproduct_set.all():
+                # print(cart)
+                report.append({
+                    'id': cart.id,
+                    'product_name': cart.product.item_name,
+                    'quantity': cart.quantity,
+                    'subtotal': cart.subtotal,
+                    'customer': i.ordered_by,
+                    'date': i.created_at,
+                })
+        return JsonResponse({'status':'success', 'data': report})
+
+
+
 class POSView(View):
     def get(self, request):
         product_list = Items.objects.all()[:10]
         cat = Category.objects.all().order_by('-id')
         context ={'product_list': product_list, 'cat':cat }
         return render(request,'pos.html', context)
+
+
 
 
 class GetItemsByCategory(View):
