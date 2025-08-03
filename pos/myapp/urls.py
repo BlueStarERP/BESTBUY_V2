@@ -60,6 +60,7 @@ urlpatterns = [
     path('get-items-by-category/', GetItemsByCategory.as_view(), name='GetItemsByCategory'),
     path('report2/', Report2.as_view(), name='Report2'),
     path('getReport/', getReport.as_view(), name='getReport'),
+    path('DeleteReport/', DeleteReport.as_view(), name='DeleteReport'),
 
 
 #website section

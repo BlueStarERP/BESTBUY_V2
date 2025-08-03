@@ -15,8 +15,8 @@ from .forms import *
 from .models import *
 
 #html2pdf
-from django.template.loader import get_template
-from xhtml2pdf import pisa
+# from django.template.loader import get_template
+# from xhtml2pdf import pisa
 
 # Create your views here.
 def test(request):
@@ -252,7 +252,9 @@ class MyCartView(UserRequiredMixin,TemplateView):
 # V2
 class Report2(View):
     def get(self, request):
-        rep = Order.objects.all()
+        today = datetime.date.today()
+        first_date = today.replace(day=1)
+        rep = Order.objects.filter(created_at__range=[first_date, today])
         report = []
         for i in rep:
             for cart in i.cart.cartproduct_set.all():
@@ -265,9 +267,42 @@ class Report2(View):
                     'customer': i.ordered_by,
                     'date': i.created_at,
                 })
-        print(report)
+        # print(report)
         context={'report':report}
         return render(request, 'report2.html', context)
+    
+    def post(self, request):
+        fromdate = request.POST.get('fromdate')
+        todate = request.POST.get('todate')
+        today = datetime.date.today()
+        first_date = today.replace(day=1)
+        rep = Order.objects.filter(created_at__range=[fromdate, todate])
+        report = []
+        for i in rep:
+            for cart in i.cart.cartproduct_set.all():
+                # print(cart)
+                report.append({
+                    'id': cart.id,
+                    'product_name': cart.product.item_name,
+                    'quantity': cart.quantity,
+                    'subtotal': cart.subtotal,
+                    'customer': i.ordered_by,
+                    'date': i.created_at,
+                })
+        # print(report)
+        context={'report':report}
+        return render(request, 'report2.html', context)
+
+
+class DeleteReport(View):
+    def get(self, request):
+        report_id = request.GET.get('reportid')
+        product_obj = CartProduct.objects.get(id=report_id)
+        product_obj.delete()
+        return JsonResponse({'status':'success'})
+
+
+
 
 
 class getReport(View):
