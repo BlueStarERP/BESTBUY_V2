@@ -12,19 +12,22 @@
         <div class="row">
             <div class="col-md-4 col-sm-12">
                 <div class="form-group">
-                    <label>From Date</label>
+                    
                     <input type="date" name="fromdate" class="form-control">
+                    <label>From Date</label>
                 </div>
             </div>
             <div class="col-md-4 col-sm-12">
                 <div class="form-group">
-                    <label>To Date</label>
+                    
                     <input type="date" name="todate" class="form-control">
+                    <label>To Date</label>
                 </div>
             </div>
-
-        </div>
-        <button
+            <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                
+                <button
                 type="submit"
                 class="btn btn-sm"
                 data-bgcolor="#00b489"
@@ -33,6 +36,11 @@
             <i class="icon-copy dw dw-filter-1"></i>Filter Report
 
         </button>
+</div>
+            </div>
+
+        </div>
+        
         <div>
             {% if message %}
             <hr>
@@ -84,13 +92,14 @@
 
             </tbody>
             <tfoot>
-            <!-- <tr>
-                <td></td>
-                <td>Grand Total</td>
-                <td><strong>{{sum}}</strong></td>
+            <tr>
                 <td></td>
                 <td></td>
-            </tr> -->
+                <td></td>
+                <td>Total Sale</td>
+                <td><strong class="text-blue">{{total_sale}}</strong></td>
+                
+            </tr>
             </tfoot>
         </table>
     </div>

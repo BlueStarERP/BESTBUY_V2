@@ -256,6 +256,7 @@ class Report2(View):
         first_date = today.replace(day=1)
         rep = Order.objects.filter(created_at__range=[first_date, today])
         report = []
+        total_sale = 0
         for i in rep:
             for cart in i.cart.cartproduct_set.all():
                 # print(cart)
@@ -267,8 +268,9 @@ class Report2(View):
                     'customer': i.ordered_by,
                     'date': i.created_at,
                 })
+                total_sale += cart.subtotal
         # print(report)
-        context={'report':report}
+        context={'report':report, 'total_sale':total_sale}
         return render(request, 'report2.html', context)
     
     def post(self, request):
@@ -278,6 +280,7 @@ class Report2(View):
         first_date = today.replace(day=1)
         rep = Order.objects.filter(created_at__range=[fromdate, todate])
         report = []
+        total_sale = 0
         for i in rep:
             for cart in i.cart.cartproduct_set.all():
                 # print(cart)
@@ -289,8 +292,9 @@ class Report2(View):
                     'customer': i.ordered_by,
                     'date': i.created_at,
                 })
+                total_sale += cart.subtotal
         # print(report)
-        context={'report':report}
+        context={'report':report, 'total_sale':total_sale}
         return render(request, 'report2.html', context)
 
 
