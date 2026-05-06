@@ -179,6 +179,7 @@
                     <!-- <a href="{% url 'myapp:InvoiceDetailView' p.id%}" class="btn btn-sm btn-outline-primary">print
                         preview</a> -->
                     <a href="{% url 'myapp:InvoiceThermalPrintView' p.id%}" target="_blank" class="btn btn-sm btn-danger">Print</a>
+                    <a href="#" data-rid="{{p.id}}" class="btn btn-sm btn-outline-danger deleteBtn">Delete</a>
                 </td>
 
             </tr>
@@ -198,7 +199,76 @@
         </table>
     </div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="ModalBdy">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enter Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="number" name="reportid" id="inputid" value="0">
+        <input type="password" class="form-control" name="pincode" id="pincode">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="ChangeBtn" class="btn btn-danger">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Export Datatable End -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#reportBdy').on('click', '.deleteBtn', function () {
+            reportId = $(this).data('rid');
+            $("#inputid").val(reportId);
+            $('#exampleModal').modal('show');
+            
+        });//click
+
+        $('#ModalBdy').on('click', '#ChangeBtn', function () {
+            rid = $("#inputid").val();
+            pincode = $('#pincode').val();
+            if (pincode == "") {
+                alert("Please enter the pincode");
+                return;
+            }
+            if (pincode != "123456") {
+                alert("Incorrect pincode");
+                return;
+            }else {
+                $.ajax({
+                    url: "/DeleteReport/",
+                    type: "GET",
+                    data: {
+                        'reportid': rid,
+                    },
+                    success: function (response) {
+                        if (response.status == "success") {
+                            alert("Report deleted successfully");
+                            location.reload();
+                        } else {
+                            alert("Failed to delete report");
+                        }
+                    },
+                    error: function () {
+                        alert("Error occurred while deleting report");
+                    }
+                });
+            }
+        });//changebtn
+
+
+
+    });//readyfn
+</script>
 
 
 {% endblock content %}
