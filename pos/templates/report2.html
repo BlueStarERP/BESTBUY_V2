@@ -65,6 +65,7 @@
             <thead>
             <tr class="table-warning">
                 <th class="table-plus datatable-nosort">Date</th>
+                <!-- <th class="table-plus datatable-nosort">Invoice ID</th> -->
                 
                 <th>CustomerName</th>
                 <th>Items</th>
@@ -78,6 +79,7 @@
             
             <tr class="reportTr" data-rid="{{i.id}}">
                 <td class="table-plus">{{i.date}}</td>
+                <!-- <td class="table-plus">{{i.order__id}}</td> -->
                 <td>{{i.customer}}</td>
                 <td class="text-blue">{{i.product_name}}</td>
                 <td>{{i.quantity}}</td>

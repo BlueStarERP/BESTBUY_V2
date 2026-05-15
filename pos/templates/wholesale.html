@@ -1,0 +1,554 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+
+    <!-- LEFT: ITEM LIST -->
+    <div class="col-md-8">
+
+        <!-- Search Box -->
+        <div class="mb-3">
+            <input type="text" id="searchBox" class="form-control" placeholder="Search items...">
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Price</th>
+                        <th>Input Qty</th>
+                    </tr>
+                </thead>
+                <tbody id="itemTable">
+                    
+                    {% for product in product_list %}
+
+                    <tr>
+                        <td>{{ product.item_name }}</td>
+                        <td>{{ product.sell_price }}</td>
+                        <td class="d-flex gap-2">
+                            <input type="number" min="1" value="1" class="form-control form-control-sm qty-input"
+                                style="width:80px;">
+                            <button class="btn btn-sm btn-primary"
+                                onclick="addToCartWithQty(this,'{{ product.id }}', '{{ product.item_name }}', {{ product.sell_price }})">
+                                Add
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <button class="btn btn-sm btn-secondary" onclick="prevPage()">⬅ Prev</button>
+
+                <span id="pageInfo">Page 1</span>
+
+                <button class="btn btn-sm btn-secondary" onclick="nextPage()">Next ➡</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: CART -->
+    <div class="col-md-4">
+
+        <h5>Cart</h5>
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="cartTable"></tbody>
+
+            </table>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="mt-3">
+            <h5>Total: <span id="grandTotal">0</span> MMK</h5>
+        </div>
+
+        <!-- Discount -->
+        <div class="mt-3">
+            <label>Discount (MMK)</label>
+            <input type="number" id="discount" class="form-control" value="0">
+        </div>
+
+        <!-- Delivery Fee -->
+        <div class="mt-2">
+            <label>Delivery Fee (MMK)</label>
+            <input type="number" id="delivery" class="form-control" value="0">
+        </div>
+
+        <!-- Description -->
+        <div class="mt-2">
+            <label>Note</label>
+            <textarea id="note" class="form-control" rows="2" placeholder="Optional..."></textarea>
+        </div>
+
+        <!-- Final Total -->
+        <div class="mt-3">
+            <h5>Final Total: <span id="finalTotal">0</span> MMK</h5>
+        </div>
+
+        <!-- Print Button -->
+        <div class="mt-3 d-grid">
+            <button class="btn btn-success" onclick="printInvoice()">🧾 Print Invoice</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    let cart = [];
+
+
+
+    function addToCartWithQty(btn, id, name, price) {
+        let row = btn.closest("tr");
+        let qtyInput = row.querySelector(".qty-input");
+        let qty = parseInt(qtyInput.value) || 1;
+
+        let item = cart.find(i => i.id === id);
+
+        if (item) {
+            item.qty += qty;
+        } else {
+            cart.push({ id, name, price, qty });
+        }
+
+        qtyInput.value = 1; // reset input
+        renderCart();
+    }
+
+    // function renderCart() {
+    //     let cartTable = document.getElementById("cartTable");
+    //     let grandTotal = 0;
+
+    //     cartTable.innerHTML = "";
+
+    //     cart.forEach((item, index) => {
+    //         let total = item.price * item.qty;
+    //         grandTotal += total;
+
+    //         cartTable.innerHTML += `
+    //             <tr>
+    //                 <td>${item.name}</td>
+    //                 <td>${item.qty}</td>
+    //                 <td>${total}</td>
+    //                 <td>
+    //                     <button class="btn btn-sm btn-danger"
+    //                         onclick="removeItem(${index})">
+    //                         ❌
+    //                     </button>
+    //                 </td>
+    //             </tr>
+    //         `;
+    //     });
+
+    //     document.getElementById("grandTotal").innerText = grandTotal;
+    // }
+
+    function renderCart() {
+        let cartTable = document.getElementById("cartTable");
+        let grandTotal = 0;
+
+        cartTable.innerHTML = "";
+
+        cart.forEach((item, index) => {
+            let total = item.price * item.qty;
+            grandTotal += total;
+
+            cartTable.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.qty}</td>
+                <td>${total}</td>
+                <td>
+                    <button class="btn btn-sm btn-danger"
+                        onclick="removeItem(${index})">
+                        ❌
+                    </button>
+                </td>
+            </tr>
+        `;
+        });
+
+        document.getElementById("grandTotal").innerText = grandTotal;
+
+        calculateFinalTotal();
+    }
+
+    function calculateFinalTotal() {
+        let grandTotal = parseInt(document.getElementById("grandTotal").innerText) || 0;
+        let discount = parseInt(document.getElementById("discount").value) || 0;
+        let delivery = parseInt(document.getElementById("delivery").value) || 0;
+
+        let finalTotal = grandTotal - discount + delivery;
+
+        document.getElementById("finalTotal").innerText = finalTotal;
+    }
+
+    document.getElementById("discount").addEventListener("input", calculateFinalTotal);
+    document.getElementById("delivery").addEventListener("input", calculateFinalTotal);
+
+    // function printInvoice() {
+    //     let note = document.getElementById("note").value;
+    //     let finalTotal = document.getElementById("finalTotal").innerText;
+    //     let discount = document.getElementById("discount").value || 0;
+    //     let delivery = document.getElementById("delivery").value || 0;
+
+    //     let now = new Date();
+    //     let dateTime = now.toLocaleString();
+
+    //     // save transaction to server url - /save_transaction/
+
+        
+
+    //     let itemsHTML = cart.map(item => {
+    //         let total = item.price * item.qty;
+
+    //         return `
+    //         <div class="row">
+    //             <div>${item.name}</div>
+    //             <div class="flex">
+    //                 <span>${item.qty} x ${item.price}</span>
+    //                 <span>${total}</span>
+    //             </div>
+    //         </div>
+    //     `;
+    //     }).join("");
+
+    //     let printWindow = window.open("", "", "width=300,height=600");
+
+    //     printWindow.document.write(`
+    //     <html>
+    //     <head>
+    //         <title>BestBuy</title>
+    //         <style>
+    //             body {
+    //                 font-family: monospace;
+    //                 width: 58mm;
+    //                 margin: 0;
+    //                 padding: 5px;
+    //                 font-size: 12px;
+    //             }
+    //             .center { text-align: center; }
+    //             .line { border-top: 1px dashed #000; margin: 5px 0; }
+    //             .row { margin-bottom: 4px; }
+    //             .flex {
+    //                 display: flex;
+    //                 justify-content: space-between;
+    //             }
+    //             .bold { font-weight: bold; }
+    //         </style>
+    //     </head>
+    //     <body>
+
+    //         <div class="center bold">BestBuy</div>
+    //         <div class="center">Yangon</div>
+    //         <div class="center">${dateTime}</div>
+
+    //         <div class="line"></div>
+
+    //         ${itemsHTML}
+
+    //         <div class="line"></div>
+
+    //         <div class="flex">
+    //             <span>Subtotal</span>
+    //             <span>${document.getElementById("grandTotal").innerText}</span>
+    //         </div>
+
+    //         <div class="flex">
+    //             <span>Discount</span>
+    //             <span>- ${discount}</span>
+    //         </div>
+
+    //         <div class="flex">
+    //             <span>Delivery</span>
+    //             <span>${delivery}</span>
+    //         </div>
+
+    //         <div class="line"></div>
+
+    //         <div class="flex bold">
+    //             <span>TOTAL</span>
+    //             <span>${finalTotal}</span>
+    //         </div>
+
+    //         <div class="line"></div>
+
+    //         <div>Note: ${note || "-"}</div>
+
+    //         <div class="center">Thank you!</div>
+
+    //     </body>
+    //     </html>
+    // `);
+    //     printWindow.document.close();
+
+    //     // Wait for render before print
+    //     printWindow.onload = function () {
+    //         printWindow.print();
+    //         // ✅ Clear cart AFTER printing
+    //         cart = [];
+    //         renderCart();
+
+    //         // Reset extra fields
+    //         document.getElementById("discount").value = 0;
+    //         document.getElementById("delivery").value = 0;
+    //         document.getElementById("note").value = "";
+    //         printWindow.close();
+    //     };
+    // }
+
+    function printInvoice() {
+    let note = document.getElementById("note").value;
+    let finalTotal = document.getElementById("finalTotal").innerText;
+    let grandTotal = document.getElementById("grandTotal").innerText;
+    let discount = document.getElementById("discount").value || 0;
+    let delivery = document.getElementById("delivery").value || 0;
+
+    let now = new Date();
+    let dateTime = now.toLocaleString();
+
+    // Prepare cart items for sending to server
+    let cartItems = cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        qty: item.qty,
+        total: item.price * item.qty
+    }));
+
+    // Prepare transaction data
+    let transactionData = {
+        items: cartItems,
+        subtotal: grandTotal,
+        discount: discount,
+        delivery_fee: delivery,
+        final_total: finalTotal,
+        note: note,
+        transaction_date: now.toISOString()
+    };
+
+    // Send transaction to server via AJAX
+    $.ajax({
+        url: '/save_transaction/',
+        type: 'POST',
+        data: JSON.stringify(transactionData),
+        contentType: 'application/json',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')  // Django CSRF token
+        },
+        success: function(response) {
+            console.log('Transaction saved:', response);
+            
+            // Proceed with printing after successful save
+            printReceipt(note, finalTotal, discount, delivery, grandTotal, dateTime, cartItems);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error saving transaction:', error);
+            alert('Failed to save transaction. Please try again.');
+        }
+    });
+}
+
+// Helper function to get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Separate function to print the receipt
+function printReceipt(note, finalTotal, discount, delivery, grandTotal, dateTime, cartItems) {
+    let itemsHTML = cartItems.map(item => {
+        return `
+            <div class="row">
+                <div>${item.name}</div>
+                <div class="flex">
+                    <span>${item.qty} x ${item.price}</span>
+                    <span>${item.total}</span>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    let printWindow = window.open("", "", "width=300,height=600");
+
+    printWindow.document.write(`
+    <html>
+    <head>
+        <title>BestBuy</title>
+        <style>
+            body {
+                font-family: monospace;
+                width: 58mm;
+                margin: 0;
+                padding: 5px;
+                font-size: 12px;
+            }
+            .center { text-align: center; }
+            .line { border-top: 1px dashed #000; margin: 5px 0; }
+            .row { margin-bottom: 4px; }
+            .flex {
+                display: flex;
+                justify-content: space-between;
+            }
+            .bold { font-weight: bold; }
+        </style>
+    </head>
+    <body>
+
+        <div class="center bold">BestBuy</div>
+        <div class="center">Yangon</div>
+        <div class="center">${dateTime}</div>
+
+        <div class="line"></div>
+
+        ${itemsHTML}
+
+        <div class="line"></div>
+
+        <div class="flex">
+            <span>Subtotal</span>
+            <span>${grandTotal}</span>
+        </div>
+
+        <div class="flex">
+            <span>Discount</span>
+            <span>- ${discount}</span>
+        </div>
+
+        <div class="flex">
+            <span>Delivery</span>
+            <span>${delivery}</span>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="flex bold">
+            <span>TOTAL</span>
+            <span>${finalTotal}</span>
+        </div>
+
+        <div class="line"></div>
+
+        <div>Note: ${note || "-"}</div>
+
+        <div class="center">Thank you!</div>
+
+    </body>
+    </html>
+    `);
+    
+    printWindow.document.close();
+
+    // Wait for render before print
+    printWindow.onload = function () {
+        printWindow.print();
+        // ✅ Clear cart AFTER printing
+        cart = [];
+        renderCart();
+
+        // Reset extra fields
+        document.getElementById("discount").value = 0;
+        document.getElementById("delivery").value = 0;
+        document.getElementById("note").value = "";
+        printWindow.close();
+    };
+}
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+    
+
+
+    let currentPage = 1;
+    let rowsPerPage = 20;
+
+    function showPage(page) {
+        let rows = document.querySelectorAll("#itemTable tr");
+        let totalRows = rows.length;
+
+        let start = (page - 1) * rowsPerPage;
+        let end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            row.style.display = (index >= start && index < end) ? "" : "none";
+        });
+
+        document.getElementById("pageInfo").innerText =
+            `Page ${page} / ${Math.ceil(totalRows / rowsPerPage)}`;
+    }
+
+    function nextPage() {
+        let rows = document.querySelectorAll("#itemTable tr");
+        let totalPages = Math.ceil(rows.length / rowsPerPage);
+
+        if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    }
+
+    window.onload = function () {
+        showPage(currentPage);
+    };
+
+    //search filter after pagination
+    document.getElementById("searchBox").addEventListener("keyup", function () {
+        let query = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#itemTable tr");
+
+        rows.forEach(row => {
+            let itemName = row.cells[0].innerText.toLowerCase();
+            row.style.display = itemName.includes(query) ? "" : "none";
+        });
+    });
+
+    
+
+
+</script>
+
+
+
+
+{% endblock content %}

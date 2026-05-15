@@ -61,6 +61,10 @@ urlpatterns = [
     path('report2/', Report2.as_view(), name='Report2'),
     path('getReport/', getReport.as_view(), name='getReport'),
     path('DeleteReport/', DeleteReport.as_view(), name='DeleteReport'),
+    
+    #Wholesale
+    path('WholesaleView/', WholesaleView.as_view(), name='WholesaleView'),
+    path('save_transaction/', views.save_transaction, name='save_transaction'),
 
 
 #website section

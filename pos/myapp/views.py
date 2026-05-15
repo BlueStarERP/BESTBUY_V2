@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+import json
 
 from .forms import *
 from .models import *
@@ -56,6 +57,69 @@ class UserLogoutView(View):
 
 
 # ================================= end user log in ===========================================
+class WholesaleView(UserRequiredMixin,TemplateView):
+    template_name = 'wholesale.html'
+    #get product list
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product_list'] = Items.objects.all().order_by('-id')
+        return context
+
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+import json
+
+@csrf_exempt  # Only if you're not using CSRF tokens properly
+@require_http_methods(["POST"])
+def save_transaction(request):
+    try:
+        # Parse JSON data from request body
+        data = json.loads(request.body)
+        
+        print('Transaction received:')
+        print(f"Items: {data.get('items')}")
+        print(f"Subtotal: {data.get('subtotal')}")
+        print(f"Discount: {data.get('discount')}")
+        print(f"Delivery Fee: {data.get('delivery_fee')}")
+        print(f"Final Total: {data.get('final_total')}")
+        print(f"Note: {data.get('note')}")
+        print(f"Date: {data.get('transaction_date')}")
+        
+        # Here you can save to your database
+        # Example:
+        # from your_app.models import Transaction
+        # transaction = Transaction.objects.create(
+        #     subtotal=data['subtotal'],
+        #     discount=data['discount'],
+        #     delivery_fee=data['delivery_fee'],
+        #     final_total=data['final_total'],
+        #     note=data['note'],
+        #     transaction_date=data['transaction_date']
+        # )
+        # 
+        # # Save items
+        # for item in data['items']:
+        #     TransactionItem.objects.create(
+        #         transaction=transaction,
+        #         product_id=item['id'],
+        #         product_name=item['name'],
+        #         price=item['price'],
+        #         quantity=item['qty'],
+        #         total=item['total']
+        #     )
+        
+        return JsonResponse({'status': 'success', 'message': 'Transaction saved successfully'})
+    
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+    
+    except Exception as e:
+        print(f"Error saving transaction: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
 class HomeView(UserRequiredMixin,TemplateView):
     template_name = 'home.html'
 
