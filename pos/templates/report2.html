@@ -67,23 +67,26 @@
                 <th class="table-plus datatable-nosort">Date</th>
                 <!-- <th class="table-plus datatable-nosort">Invoice ID</th> -->
                 
-                <th>CustomerName</th>
-                <th>Items</th>
+                <th>Invoice ID</th>
+                <th>Customer</th>
 
-                <th>Qty</th>
+                <th>Address</th>
                 <th>Total Amount</th>
+               
             </tr>
             </thead>
             <tbody id="reportBdy">
                 {% for i in report %}
             
             <tr class="reportTr" data-rid="{{i.id}}">
-                <td class="table-plus">{{i.date}}</td>
+                <td>{{i.created_at}}</td>
+                <td class="table-plus">{{i.id}}</td>
                 <!-- <td class="table-plus">{{i.order__id}}</td> -->
-                <td>{{i.customer}}</td>
-                <td class="text-blue">{{i.product_name}}</td>
-                <td>{{i.quantity}}</td>
+                <td>{{i.ordered_by}}</td>
+                <td class="text-blue">{{i.shipping_address}}</td>
+                
                 <td>{{i.subtotal}}</td>
+              
 
             </tr>
             {% endfor %}
@@ -107,36 +110,11 @@
     </div>
 </div>
 
-<!-- Button trigger modal -->
-<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Launch demo modal
-</button> -->
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content" id="ModalBdy">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Enter Password</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="number" hidden name="reportid" id="inputid" value="0">
-        <input type="password" class="form-control" name="pincode" id="pincode">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="ChangeBtn" class="btn btn-danger">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Export Datatable End -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
+<!-- <script>
     $(document).ready(function(){
         $('#reportBdy').on('click', '.reportTr', function () {
             reportId = $(this).data('rid');
@@ -180,6 +158,51 @@
 
 
     });//readyfn
+</script> -->
+
+
+<!-- when click reportTr get report ID then show password input 1234 , delete by ID -->
+<script>
+    $(document).ready(function(){
+        $('#reportBdy').on('click', '.reportTr', function () {
+            reportId = $(this).data('rid');
+            // $("#inputid").val(reportId);
+            
+        
+        pincode = prompt("Enter pincode to delete report ID: " + reportId);
+        if (pincode == "") {
+            alert("Please enter the pincode");
+            return;
+        }
+        if (pincode != "123456") {
+            alert("Incorrect pincode");
+            return;
+        }else {
+            $.ajax({
+                url: "/DeleteReport/",
+                type: "GET",
+                data: {
+                    'reportid': reportId,
+                },
+                success: function (response) {
+                    if (response.status == "success") {
+                        alert("Report deleted successfully");
+                        location.reload();
+                    } else {
+                        alert("Failed to delete report");
+                    }
+                },
+                error: function () {
+                    alert("Error occurred while deleting report");
+                }
+            });
+        }
+    });
+
+
+    });//readyfn
 </script>
+
+
 
 {% endblock content %}

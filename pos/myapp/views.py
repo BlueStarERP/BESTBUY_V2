@@ -334,7 +334,7 @@ class Report2(View):
                 })
                 total_sale += cart.subtotal
         # print(report)
-        context={'report':report, 'total_sale':total_sale}
+        context={'report':rep, 'total_sale':total_sale}
         return render(request, 'report2.html', context)
     
     def post(self, request):
@@ -365,8 +365,8 @@ class Report2(View):
 class DeleteReport(View):
     def get(self, request):
         report_id = request.GET.get('reportid')
-        product_obj = CartProduct.objects.get(id=report_id)
-        product_obj.delete()
+        order = Order.objects.get(id=report_id)
+        order.delete()
         return JsonResponse({'status':'success'})
 
 
